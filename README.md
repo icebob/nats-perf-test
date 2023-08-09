@@ -11,9 +11,9 @@
 [17056] 2023/08/09 17:47:17.706678 [INF] Server is ready
 ```
 
-**NATS lib version:** 2.5.1
-**Node.js**: 18.16.0
-**OS**: Windows 10
+- **NATS lib version:** 2.5.1
+- **Node.js**: 18.16.0
+- **OS**: Windows 10
 
 ## Test
 
