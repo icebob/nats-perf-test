@@ -46,7 +46,65 @@ Connected. Start...
 68 req/s
 ```
 
-## After modified `sendCommand`
+## After modified `sendCommand` 500x faster
 
 ```
+d:\Work\tmp\nats-perf-test>node latency.js
+Connected. Start...
+28 327 req/s
+30 322 req/s
+30 784 req/s
+30 120 req/s
+30 687 req/s
+31 142 req/s
+31 386 req/s
+30 323 req/s
+30 786 req/s
+30 632 req/s
+30 492 req/s
+30 895 req/s
+30 698 req/s
+30 794 req/s
+30 704 req/s
+30 755 req/s
+30 987 req/s
+30 567 req/s
+30 756 req/s
+30 894 req/s
+30 322 req/s
+```
+
+## Diff in protocol.js
+
+```diff
+    sendCommand(cmd, ...payloads) {
+        const len = this.outbound.length();
+        let buf;
+        if (typeof cmd === "string") {
+            buf = (0, encoders_1.encode)(cmd);
+        }
+        else {
+            buf = cmd;
+        }
+        this.outbound.fill(buf, ...payloads);
++       this.flushPending();
+-       if (len === 0) {
+-           //@ts-ignore: node types timer
+-           this.flusher = setTimeout(() => {
+-               this.flushPending();
+-           });
+-       }
+-       else if (this.outbound.size() >= this.pendingLimit) {
+-           // if we have a flusher, clear it - otherwise in a bench
+-           // type scenario where the main loop is dominated by a publisher
+-           // we create many timers.
+-           if (this.flusher) {
+-               //@ts-ignore: node types timer
+-               clearTimeout(this.flusher);
+-               this.flusher = null;
+-           }
+-           this.flushPending();
+-       }
+    }
+
 ```
